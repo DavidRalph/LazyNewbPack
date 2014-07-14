@@ -84,11 +84,11 @@ The launcher can substitute the contents to provide control schemes which are be
 -------------------
 Extract any graphics packs you want to be able to use into a subfolder of "LNP\Graphics"
 
-LOOKS LIKE: 	"Graphics\Mayday\[files]"
+LOOKS LIKE: 	``"Graphics\Mayday\[files]"``
 
-NOT LIKE:   	"Graphics\Mayday\Mayday\[files]"
+NOT LIKE:   	``"Graphics\Mayday\Mayday\[files]"``
 
-Once placed you can press the "Simplify Graphic Folder" button in the Lazy Newb Pack program to delete all the extra files the pack may contain - effectively extracting the graphics from a full install of Dwarf Fortress.
+Once placed you can press the "Simplify Graphic Folders" button in the Lazy Newb Pack program to delete all the extra files the pack may contain - effectively extracting the graphics from a full install of Dwarf Fortress.
 
 This is useful to save space or to re-pack to a friend.  If adding graphics packs, simplifying a pre-installed package in this way avoids the common problem of missing files in 'upgrade packs'.  
 
