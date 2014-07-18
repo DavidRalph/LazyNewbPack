@@ -664,6 +664,16 @@ Public Class MainForm
         GetUtilityPath = Path
     End Function
 
+    Private Function RunDF() As Boolean 'gla3dr
+        Dim p() = Process.GetProcessesByName("Dwarf Fortress")
+        If p.Length > 0 Then
+            Dim style = MsgBoxStyle.YesNo Or MsgBoxStyle.Question Or MsgBoxStyle.DefaultButton2 Or MsgBoxStyle.ApplicationModal
+            Dim run = MsgBox("Dwarf Fortress is already running." + Environment.NewLine + "Do you want to run it again?", style)
+            Return run = MsgBoxResult.Yes
+        Else
+            Return True
+        End If
+    End Function
 
     'MENU ITEMS
 
@@ -688,6 +698,9 @@ Public Class MainForm
     End Sub
 
     Private Sub PlayDF(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles PlayDFButton.Click, DwarfFortressToolStripMenuItem.Click
+        If Not RunDF() Then
+            Return
+        End If
         saveDFHackInit()
         RunFileByBatch("Dwarf Fortress.exe", dfDir)
         RunStartupUtilities()
