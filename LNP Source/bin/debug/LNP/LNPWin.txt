@@ -1,3 +1,5 @@
+version: 0
+CheckAgain: 2014-07-17
 folders:
 -  title: Main Folder
    path: [Root directory]
@@ -45,7 +47,8 @@ links:
    path: http://shop.oreilly.com/product/0636920022565.do
 -  title: Free, old basis of book
    path: http://afteractionreporter.com/2009/02/09/the-complete-and-utter-newby-tutorial-for-dwarf-fortress-part-1-wtf/
-Onload.init:-  title: Use Isometric Graphics
+Onload.init:
+-  title: Use Isometric Graphics
    command: stonesense overlay
    enabled: False
    tooltip: enables an experimental isometric overlay
