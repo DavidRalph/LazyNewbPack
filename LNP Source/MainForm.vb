@@ -15,6 +15,7 @@
 'along with this program.  If not, see <http://www.gnu.org/licenses/>.
 Imports System.Net
 Imports System.IO
+Imports System.Text.RegularExpressions
 
 Public Class MainForm
 
@@ -790,6 +791,10 @@ Public Class MainForm
                 Dim temp = Split(line, " ", 2)
                 localVersion = temp(temp.Length - 1)
                 If (localVersion.Equals("0")) Then
+                    Dim tempVersion = GetVersionFromDirectory()
+                    If (Not tempVersion.Equals("")) Then
+                        localVersion = tempVersion
+                    End If
                     firstRun = True
                 End If
                 line = LineInput(1)
@@ -804,9 +809,22 @@ Public Class MainForm
         FileClose(1)
     End Sub
 
-    Private Sub WriteDFFDVersionToLNPWin() 'Keirathi
+    Private Function GetVersionFromDirectory()
+        Dim strPath As String = System.IO.Path.GetDirectoryName( _
+                                        System.Reflection.Assembly.GetExecutingAssembly().CodeBase)
+        Dim regex = New Regex("\b(\d{2}_\d{2}).*\b(r\d*)")
+        Dim match = regex.Match(strPath)
+        Dim result = ""
+        If match.Success Then
+            result = match.Groups(1).Value & " " & match.Groups(2).Value
+            'MsgBox(result)
+        End If
+        Return result
+    End Function
+
+    Private Sub WriteVersionToLNPWin() 'Keirathi
         Dim file = FileWorking.ReadFile("LNPWin.txt", lnpD)
-        FileWorking.ReplaceText(file, "version: 0", "version: " & dffdVersion)
+        FileWorking.ReplaceText(file, "version: 0", "version: " & localVersion)
         FileWorking.SaveFile("LNPWin.txt", lnpD, file)
     End Sub
 
@@ -823,9 +841,13 @@ Public Class MainForm
             Dim result = Split(source, " ", 2)
             dffdVersion = result(result.Length - 1)
             If (firstRun) Then
-                localVersion = dffdVersion
-                WriteDFFDVersionToLNPWin()
-                'MsgBox(String.Format("{0} - {1}", dffdVersion, localVersion))
+                If (localVersion.Equals("0")) Then
+                    localVersion = dffdVersion
+                    'MsgBox("Wrote to LNPWin based on DFFD version")
+                Else
+                    'MsgBox("Wrote to LNPWin based on directory version")
+                End If
+                WriteVersionToLNPWin()
             End If
             If (Not dffdVersion.Equals(localVersion)) Then
                 Dim update As UpdateForm = New UpdateForm()
