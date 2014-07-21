@@ -13,11 +13,18 @@
 
 'You should have received a copy of the GNU General Public License
 'along with this program.  If not, see <http://www.gnu.org/licenses/>.
+Imports System.Net
+Imports System.IO
+Imports System.Text.RegularExpressions
 
 Public Class MainForm
 
     'gets version number from ap
     Dim version = My.Application.Info.Version.Major.ToString + "." + My.Application.Info.Version.Minor.ToString
+    Dim localVersion
+    Dim dffdVersion
+    Dim checkAgain
+    Dim firstRun As Boolean = False
 
     'file created when extras installed
     Dim installFile = "LNP" + version + ".txt"
@@ -113,6 +120,7 @@ Public Class MainForm
             UtilityList = Utilities.FindAllUtilities(utilityD) 'and utilities
             LoadCheckedUtilities() 'and checked utilities - daveralph1234
             PopulateMenus() 'and menus - daveralph1234
+            CheckVersion()
         End If
     End Sub
 
@@ -188,7 +196,7 @@ Public Class MainForm
         ChildCapButton.Text = "Child Cap: " + childCap
         VariedGroundButton.Text = "Varied Ground: " + booleanToYesNo(variedGround)
         ArtifactsButton.Text = "Artifacts: " + booleanToYesNo(artifacts)
-        EntombPetsButton.text = "Entomb Pets: " + booleanToYesNo(Not dontEntombPets)
+        EntombPetsButton.Text = "Entomb Pets: " + booleanToYesNo(Not dontEntombPets)
         LaborButton.Text = "Starting Labors: " + laborLists
 
         AquiferButton.Text = "Aquifers: " + booleanToYesNo(aquifers)
@@ -772,6 +780,80 @@ Public Class MainForm
             End If
         Loop
         FileClose(1)
+    End Sub
+
+    Private Sub GetVersionAndCheckAgain() 'Keirathi
+        FileOpen(1, lnpD & "\LNPWin.txt", OpenMode.Input)
+        Dim line As String
+        line = LineInput(1)
+        Do While Not EOF(1)
+            If line.StartsWith("version:") Then
+                Dim temp = Split(line, " ", 2)
+                localVersion = temp(temp.Length - 1)
+                If (localVersion.Equals("0")) Then
+                    Dim tempVersion = GetVersionFromDirectory()
+                    If (Not tempVersion.Equals("")) Then
+                        localVersion = tempVersion
+                    End If
+                    firstRun = True
+                End If
+                line = LineInput(1)
+            ElseIf line.StartsWith("CheckAgain:") Then
+                Dim temp = Split(line, " ")
+                checkAgain = DateTime.Parse(temp(temp.Length - 1))
+                line = LineInput(1)
+                FileClose(1)
+                Return
+            End If
+        Loop
+        FileClose(1)
+    End Sub
+
+    Private Function GetVersionFromDirectory()
+        Dim strPath As String = System.IO.Path.GetDirectoryName( _
+                                        System.Reflection.Assembly.GetExecutingAssembly().CodeBase)
+        Dim regex = New Regex("\b(\d{2}_\d{2}).*\b(r\d*)")
+        Dim match = regex.Match(strPath)
+        Dim result = ""
+        If match.Success Then
+            result = match.Groups(1).Value & " " & match.Groups(2).Value
+            'MsgBox(result)
+        End If
+        Return result
+    End Function
+
+    Private Sub WriteVersionToLNPWin() 'Keirathi
+        Dim file = FileWorking.ReadFile("LNPWin.txt", lnpD)
+        FileWorking.ReplaceText(file, "version: 0", "version: " & localVersion)
+        FileWorking.SaveFile("LNPWin.txt", lnpD, file)
+    End Sub
+
+    Private Sub CheckVersion() 'Keirathi
+        GetVersionAndCheckAgain()
+        If (DateTime.Today.Date.CompareTo(checkAgain) >= 0) Then
+            Dim request As WebRequest = WebRequest.Create("http://dffd.wimbli.com/file_version.php?id=7622")
+            Dim response As WebResponse = request.GetResponse()
+            Dim mystream As StreamReader = New StreamReader(response.GetResponseStream())
+            Dim source As String = mystream.ReadLine()
+            source = mystream.ReadLine()
+            source = mystream.ReadLine()
+            response.Close()
+            Dim result = Split(source, " ", 2)
+            dffdVersion = result(result.Length - 1)
+            If (firstRun) Then
+                If (localVersion.Equals("0")) Then
+                    localVersion = dffdVersion
+                    'MsgBox("Wrote to LNPWin based on DFFD version")
+                Else
+                    'MsgBox("Wrote to LNPWin based on directory version")
+                End If
+                WriteVersionToLNPWin()
+            End If
+            If (Not dffdVersion.Equals(localVersion)) Then
+                Dim update As UpdateForm = New UpdateForm()
+                update.Show()
+            End If
+        End If
     End Sub
 
     Sub MenuItem_Click(ByVal sender As System.Object, ByVal e As System.EventArgs)   'daveralph1234

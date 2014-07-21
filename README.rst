@@ -16,6 +16,8 @@ Building the project from source requires Microsoft Visual Basic 2010 Express or
 .. _`Dwarf Fortress Starter Pack`: http://www.bay12forums.com/smf/index.php?topic=126076
 .. _`Bay12 Forums thread for development`: http://www.bay12forums.com/smf/index.php?topic=123384
 
+Contributions are most welcome, in response to open issues or as unsolicited improvements.  Please submit pull requests to the development branch, or contact me if you want to contribute in some other way.  
+
 Contributors:  
 -------------
 
@@ -25,7 +27,7 @@ Contributors:
 - xndrad (Provided source of DFInit)
 - daveralph1234 (current lead coder)
 - PeridexisErrant (documentation, maintains Starter Pack)
-- Splinterz (DFHack tab and maintenance
+- Splinterz (DFHack tab and maintenance)
 
 ==================================
 
