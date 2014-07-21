@@ -42,7 +42,7 @@ Public Class UpdateForm
 
     Private Sub ChangeCheckAgain(ByVal day As DateTime)
         Dim file = FileWorking.ReadFile("LNPWin.txt", path)
-        MsgBox(String.Format("{0} - {1}", checkAgainDate, day.ToString("yyyy-MM-dd")))
+        'MsgBox(String.Format("{0} - {1}", checkAgainDate, day.ToString("yyyy-MM-dd")))
         FileWorking.ReplaceText(file, checkAgainDate, day.ToString("yyyy-MM-dd"))
         FileWorking.SaveFile("LNPWin.txt", path, file)
     End Sub
@@ -55,7 +55,7 @@ Public Class UpdateForm
             If line.StartsWith("CheckAgain:") Then
                 Dim temp = Split(line, " ")
                 checkAgainDate = DateTime.Parse(temp(temp.Length - 1)).ToString("yyyy-MM-dd")
-                MsgBox(checkAgainDate)
+                'MsgBox(checkAgainDate)
                 FileClose(1)
                 Return
             Else

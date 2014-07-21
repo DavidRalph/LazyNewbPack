@@ -23,6 +23,7 @@ Public Class MainForm
     Dim localVersion
     Dim dffdVersion
     Dim checkAgain
+    Dim firstRun As Boolean = False
 
     'file created when extras installed
     Dim installFile = "LNP" + version + ".txt"
@@ -107,7 +108,7 @@ Public Class MainForm
     Dim FormLoaded As Boolean = False
 
 
-    Private Sub MainForm_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load       
+    Private Sub MainForm_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
         UpdateDirectories()
         If dfDir <> "" Then
             LoadAll()
@@ -231,7 +232,7 @@ Public Class MainForm
         Dim fsp = My.Computer.FileSystem
         'check if installFile (lnpX.X.txt) already exists
         If fsp.FileExists(dfDir + "\" + installFile) Then
-            MessageBox.Show(String.Format("Already installed at {0}", installFile))
+            'MessageBox.Show("Already installed")
         Else
             Try
                 'copy files from extras directory to DF directory
@@ -724,15 +725,7 @@ Public Class MainForm
         Dim line As String
         line = LineInput(1)
         Do While Not EOF(1)
-            If line.StartsWith("version:") Then 'Keirathi
-                Dim temp = Split(line, " ")
-                localVersion = temp(temp.Length - 1)
-                line = LineInput(1)
-            ElseIf line.StartsWith("CheckAgain:") Then
-                Dim temp = Split(line, " ")
-                checkAgain = DateTime.Parse(temp(temp.Length - 1))
-                line = LineInput(1) 'Keirathi
-            ElseIf line.StartsWith("folders:") Or line.StartsWith("links:") Or line.ToLower.StartsWith("onload.init") Then
+            If line.StartsWith("folders:") Or line.StartsWith("links:") Or line.ToLower.StartsWith("onload.init") Then
                 Dim menu As ToolStripMenuItem = Nothing
                 If line.StartsWith("folders:") Then
                     menu = OpenToolStripMenuItem
@@ -788,16 +781,53 @@ Public Class MainForm
         FileClose(1)
     End Sub
 
+    Private Sub GetVersionAndCheckAgain() 'Keirathi
+        FileOpen(1, lnpD & "\LNPWin.txt", OpenMode.Input)
+        Dim line As String
+        line = LineInput(1)
+        Do While Not EOF(1)
+            If line.StartsWith("version:") Then
+                Dim temp = Split(line, " ", 2)
+                localVersion = temp(temp.Length - 1)
+                If (localVersion.Equals("0")) Then
+                    firstRun = True
+                End If
+                line = LineInput(1)
+            ElseIf line.StartsWith("CheckAgain:") Then
+                Dim temp = Split(line, " ")
+                checkAgain = DateTime.Parse(temp(temp.Length - 1))
+                line = LineInput(1)
+                FileClose(1)
+                Return
+            End If
+        Loop
+        FileClose(1)
+    End Sub
+
+    Private Sub WriteDFFDVersionToLNPWin() 'Keirathi
+        Dim file = FileWorking.ReadFile("LNPWin.txt", lnpD)
+        FileWorking.ReplaceText(file, "version: 0", "version: " & dffdVersion)
+        FileWorking.SaveFile("LNPWin.txt", lnpD, file)
+    End Sub
+
     Private Sub CheckVersion() 'Keirathi
+        GetVersionAndCheckAgain()
         If (DateTime.Today.Date.CompareTo(checkAgain) >= 0) Then
             Dim request As WebRequest = WebRequest.Create("http://dffd.wimbli.com/file_version.php?id=7622")
             Dim response As WebResponse = request.GetResponse()
-            Dim source As String = New StreamReader(response.GetResponseStream()).ReadLine()
+            Dim mystream As StreamReader = New StreamReader(response.GetResponseStream())
+            Dim source As String = mystream.ReadLine()
+            source = mystream.ReadLine()
+            source = mystream.ReadLine()
             response.Close()
-            Dim result = Split(source, " ")
+            Dim result = Split(source, " ", 2)
             dffdVersion = result(result.Length - 1)
-            'MsgBox(String.Format("{0} - {1}", dffdVersion, localVersion))
-            If (Integer.Parse(dffdVersion) > Integer.Parse(localVersion)) Then
+            If (firstRun) Then
+                localVersion = dffdVersion
+                WriteDFFDVersionToLNPWin()
+                'MsgBox(String.Format("{0} - {1}", dffdVersion, localVersion))
+            End If
+            If (Not dffdVersion.Equals(localVersion)) Then
                 Dim update As UpdateForm = New UpdateForm()
                 update.Show()
             End If
