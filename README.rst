@@ -46,6 +46,21 @@ The "Folders" and "Links" menus are defined through LNPWin.txt, and provide a se
 
 ==================================
 
+--------------------
+``./LNP/LNPWin.txt``
+--------------------
+Defines the entries in the drop down menus 'links' and 'folders'.  Modifiable to add or remove entries; sensible defaults are provided.  It has become the configuration file by default, and now also defines the entries in the dfahck tab and holds data for the update prompt function.  
+
+It also defines the entries in the DFHack tab, to allow flexibility in the compilation of a package.  These are then written to "LNP_dfhack_onLoad.init" when Dwarf Fortress is started or the launcher is closed.  The command in the provided dfhack.init will then execute the contents of that file when a world is loaded::
+
+	:lua dfhack.onStateChange.onloadscript = function(state) if state == SC_WORLD_LOADED then print((dfhack.run_command('script LNP_dfhack_onLoad.init'))) end end
+
+Advanced uses such as multiple commands in a single line or recurring commands are possible through the dfhack functions "multicmd" and "repeat" - documented in the dfhack readme - and are demonstrated in the example config.  
+
+Lines 1 and 2 are used to hold data for the update-available notice.  ``version: 0`` will attempt to pull a valid version string from the parent folder (``XX_YY rZ``); it then compares that against the version information page on DFFD (file ID 7622, defined in compiled code).  The second line holds a date in format YYYY-MM-DD, checks will be disabled until this date which can be set by the reminder option.  
+
+==================================
+
 ----------------
 Folder Structure
 ----------------
@@ -103,13 +118,3 @@ A folder provided as a default place to put useful things, such as saved copies 
 Put ANY utilities you want to use through the launcher into the "LNP\Utilities" folder. It automatically recognizes and lists .exe, .bat, and .jar files.  
 
 You can hide files from the utilities pane of the launcher by adding their filenames to "LNP\exclude.txt".  The configuration for Soundsense is provided as an example.  
-
-``./LNP/LNPWin.txt``
----------------------
-Defines the entries in the drop down menus 'links' and 'folders'.  Modifiable to add or remove entries; sensible defaults are provided.   
-
-It also defines the entries in the DFHack tab, to allow flexibility in the compilation of a package.  These are then written to "LNP_dfhack_onLoad.init" when Dwarf Fortress is started or the launcher is closed.  The command in the provided dfhack.init will then execute the contents of that file when a world is loaded::
-
-	:lua dfhack.onStateChange.onloadscript = function(state) if state == SC_WORLD_LOADED then print((dfhack.run_command('script LNP_dfhack_onLoad.init'))) end end
-
-Advanced uses such as multiple commands in a single line or recurring commands are possible through the dfhack functions "multicmd" and "repeat" - documented in the dfhack readme - and are demonstrated in the example config.  
