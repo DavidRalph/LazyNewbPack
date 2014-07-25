@@ -649,10 +649,10 @@ Public Class MainForm
 
     Private Sub RunStartupUtilities()   'daveralph1234
         For Each item In UtilityListBox.CheckedItems
-			Dim path As String = GetUtilityPath(item.text)
-			If FileWorking.IsProcessRunning(path) Then
-				Continue For
-			End If
+            Dim path As String = GetUtilityPath(item.text)
+            If FileWorking.IsProcessRunning(path) Then
+                Continue For
+            End If
             If path.EndsWith(".bat") Then
                 FileWorking.RunFile(path)
             Else
@@ -699,19 +699,16 @@ Public Class MainForm
     End Sub
 
     Private Sub PlayDF(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles PlayDFButton.Click, DwarfFortressToolStripMenuItem.Click
-		If FileWorking.IsProcessRunning("Dwarf Fortress") Then
-			MessageBox.Show("Dwarf Fortress is already running", "Message", MessageBoxButtons.OK)
-			Return
-		End If
-
-		saveDFHackInit()
-		RunFileByBatch("Dwarf Fortress.exe", dfDir)
+        saveDFHackInit()
+        If FileWorking.IsProcessRunning("Dwarf Fortress") Then
+            MessageBox.Show("Dwarf Fortress is already running", "Message", MessageBoxButtons.OK)
+            Return
+        End If
+        RunFileByBatch("Dwarf Fortress.exe", dfDir)
         RunStartupUtilities()
         If closeOnLaunch Then
             Me.Close()
         End If
-        'FileWorking.RunFile("runDF.bat", lnpD)
-        'FileWorking.RunFile("Dwarf Fortress.exe", dfDir)
     End Sub
 
 
