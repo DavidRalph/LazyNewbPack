@@ -74,6 +74,11 @@ Module FileWorking
 
     End Sub
 
+    Function IsProcessRunning(ByVal processName As String)
+        'If the string has '.exe' on the end, this will get rid of it
+        processName = System.IO.Path.GetFileNameWithoutExtension(processName)
+        Return (Process.GetProcessesByName(processName).Count > 0)
+    End Function
 
     'Returns string from text file
     Function ReadFile(ByVal filename As String, ByVal place_in_df As String)
