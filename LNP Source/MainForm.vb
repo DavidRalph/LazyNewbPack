@@ -175,7 +175,7 @@ Public Class MainForm
             pauseOnLoad = LoadingOptions.loadTagAsBool("PAUSE_ON_LOAD", tagArray)
 
             If CurrentGraphicsLabel.Text = "CurrentGraphicsLabel" Then 'only on startup - daveralph1234
-                Dim dSplit = Split(LoadingOptions.loadTag("FONT", tagArray), ".")
+                Dim dSplit = Split(LoadingOptions.loadTag("GRAPHICS_FONT", tagArray), ".")
                 CurrentGraphicsLabel.Text = dSplit(0)
             End If
 
