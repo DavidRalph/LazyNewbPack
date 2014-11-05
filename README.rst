@@ -1,3 +1,7 @@
+Note:  this launcher has been deprecated.  Use the fuller-featured and cross-platform `PyLNP launcher.`
+
+.. _`PyLNP launcher.`: https://bitbucket.org/Pidgeot/python-lnp
+
 ====================================
 README for the Starter Pack Launcher
 ====================================
